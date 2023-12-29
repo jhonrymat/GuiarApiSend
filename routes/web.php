@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,9 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::get('/auth/redirect', [AuthController::class,'redirect']);
+Route::get('/auth/callback-url', [AuthController::class,'callback']);
+
+Route::get('/login-facebook', [AuthController::class,'redirectFacebook']);
+Route::get('/facebook-callback', [AuthController::class,'callbackFacebook']);
