@@ -31,7 +31,7 @@
             <div class="container">
                 <div class="signup-content">
                     <div class="signup-form">
-                        <h2 class="form-title">Registrarse</h2>
+                        <h2 class="form-title">Registro </h2>
                         <form class="register-form" id="register-form" action="{{ $register_url }}" method="post">
                             @csrf
                             <div class="form-group">
@@ -48,8 +48,8 @@
                             <div class="form-group">
                                 <label for="email"><i class="zmdi zmdi-email"></i></label>
                                 <input type="email" name="email" id="email"
-                                    class="@error('email') is-invalid @enderror"
-                                    value="{{ old('email') }}" placeholder="Correo electronico" />
+                                    class="@error('email') is-invalid @enderror" value="{{ old('email') }}"
+                                    placeholder="Correo electronico" />
                             </div>
                             @error('email')
                                 <span class="invalid-feedback" role="alert">

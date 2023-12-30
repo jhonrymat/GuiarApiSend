@@ -76,10 +76,11 @@
                                 </button>
                             </div>
                         </form>
+                        <a href="{{ route('password.request') }}" class="signup-olvidar-link">Olvide mi contraseña</a>
                         <div class="social-login">
                             <span class="social-label">O inicia sesión con: </span>
                             <ul class="socials">
-                                <li><a href="{{ url('/login-facebook') }}"><i class="display-flex-center zmdi zmdi-facebook"></i></a></li>
+                                {{-- <li><a href="{{ url('/login-facebook') }}"><i class="display-flex-center zmdi zmdi-facebook"></i></a></li> --}}
                                 <li><a href="{{ url('/auth/redirect') }}"><i class="display-flex-center zmdi zmdi-google"></i></a></li>
                             </ul>
                         </div>
