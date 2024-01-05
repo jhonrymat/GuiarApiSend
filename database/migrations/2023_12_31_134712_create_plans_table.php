@@ -11,9 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('external_id')->nullable();
-            $table->string('external_api')->nullable();
+        Schema::create('plans', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre');
+            $table->string('precio');
+            $table->string('tipo');
+            $table->string('paypalId');
+            $table->string('paypaProductolId');
+            $table->timestamps();
         });
     }
 
@@ -22,9 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('external_id');
-            $table->dropColumn('external_api');
-        });
+        Schema::dropIfExists('plans');
     }
 };

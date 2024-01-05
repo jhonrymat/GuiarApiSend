@@ -1,95 +1,90 @@
-<x-form-section submit="updateProfileInformation">
-    <x-slot name="title">
-        {{ __('Profile Information') }}
-    </x-slot>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">{{ __('Profile Information') }}</div>
 
-    <x-slot name="description">
-        {{ __('Update your account\'s profile information and email address.') }}
-    </x-slot>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card-body">{{ __('Update your account\'s profile information and email address.') }}
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card-body">
+                            <form wire:submit.prevent="updateProfileInformation">
 
-    <x-slot name="form">
-        <!-- Profile Photo -->
-        @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-            <div x-data="{photoName: null, photoPreview: null}" class="col-span-6 sm:col-span-4">
-                <!-- Profile Photo File Input -->
-                <input type="file" id="photo" class="hidden"
-                            wire:model.live="photo"
-                            x-ref="photo"
-                            x-on:change="
-                                    photoName = $refs.photo.files[0].name;
-                                    const reader = new FileReader();
-                                    reader.onload = (e) => {
-                                        photoPreview = e.target.result;
-                                    };
-                                    reader.readAsDataURL($refs.photo.files[0]);
-                            " />
+                                <!-- Profile Photo -->
+                                @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
+                                    <div class="mb-3">
+                                        <label for="photo" class="form-label">{{ __('Photo') }}</label>
 
-                <x-label for="photo" value="{{ __('Photo') }}" />
+                                        <!-- Current Profile Photo -->
+                                        <div class="mb-2">
+                                            @if ($this->user->profile_photo_path)
+                                                <img src="{{ $this->user->profile_photo_url }}"
+                                                    alt="{{ $this->user->name }}" class="rounded-circle" width="100">
+                                            @else
+                                                <div class="text-muted">{{ __('No photo uploaded.') }}</div>
+                                            @endif
+                                        </div>
 
-                <!-- Current Profile Photo -->
-                <div class="mt-2" x-show="! photoPreview">
-                    <img src="{{ $this->user->profile_photo_url }}" alt="{{ $this->user->name }}" class="rounded-full h-20 w-20 object-cover">
+                                        <!-- New Profile Photo Input -->
+                                        <input wire:model="photo" type="file" id="photo" class="form-control">
+
+                                        @if ($this->user->profile_photo_path)
+                                            <small
+                                                class="text-muted">{{ __('Upload a new photo to replace the current one.') }}</small>
+                                            <button wire:click.prevent="deleteProfilePhoto"
+                                                class="btn btn-sm btn-secondary mt-2">{{ __('Remove Photo') }}</button>
+                                        @endif
+
+                                        <x-input-error for="photo" class="mt-2" />
+                                    </div>
+                                @endif
+
+                                <!-- Name -->
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">{{ __('Name') }}</label>
+                                    <input wire:model="state.name" id="name" type="text" class="form-control"
+                                        required autocomplete="name" />
+                                    <x-input-error for="name" class="mt-2" />
+                                </div>
+
+                                <!-- Email -->
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">{{ __('Email') }}</label>
+                                    <input wire:model="state.email" id="email" type="email" class="form-control"
+                                        required autocomplete="username" />
+                                    <x-input-error for="email" class="mt-2" />
+
+                                    @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::emailVerification()) &&
+                                            !$this->user->hasVerifiedEmail())
+                                        <p class="text-muted mt-2">
+                                            {{ __('Your email address is unverified.') }}
+                                            <a href="#"
+                                                wire:click.prevent="sendEmailVerification">{{ __('Click here to re-send the verification email.') }}</a>
+                                        </p>
+
+                                        @if ($this->verificationLinkSent)
+                                            <p class="mt-2 text-success">
+                                                {{ __('A new verification link has been sent to your email address.') }}
+                                            </p>
+                                        @endif
+                                    @endif
+                                </div>
+
+                                <div class="mb-3">
+                                    <button type="submit" class="btn btn-primary" wire:loading.attr="disabled"
+                                        wire:target="photo">{{ __('Save') }}</button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- New Profile Photo Preview -->
-                <div class="mt-2" x-show="photoPreview" style="display: none;">
-                    <span class="block rounded-full w-20 h-20 bg-cover bg-no-repeat bg-center"
-                          x-bind:style="'background-image: url(\'' + photoPreview + '\');'">
-                    </span>
-                </div>
 
-                <x-secondary-button class="mt-2 me-2" type="button" x-on:click.prevent="$refs.photo.click()">
-                    {{ __('Select A New Photo') }}
-                </x-secondary-button>
-
-                @if ($this->user->profile_photo_path)
-                    <x-secondary-button type="button" class="mt-2" wire:click="deleteProfilePhoto">
-                        {{ __('Remove Photo') }}
-                    </x-secondary-button>
-                @endif
-
-                <x-input-error for="photo" class="mt-2" />
             </div>
-        @endif
-
-        <!-- Name -->
-        <div class="col-span-6 sm:col-span-4">
-            <x-label for="name" value="{{ __('Name') }}" />
-            <x-input id="name" type="text" class="mt-1 block w-full" wire:model="state.name" required autocomplete="name" />
-            <x-input-error for="name" class="mt-2" />
         </div>
-
-        <!-- Email -->
-        <div class="col-span-6 sm:col-span-4">
-            <x-label for="email" value="{{ __('Email') }}" />
-            <x-input id="email" type="email" class="mt-1 block w-full" wire:model="state.email" required autocomplete="username" />
-            <x-input-error for="email" class="mt-2" />
-
-            @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::emailVerification()) && ! $this->user->hasVerifiedEmail())
-                <p class="text-sm mt-2">
-                    {{ __('Your email address is unverified.') }}
-
-                    <button type="button" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" wire:click.prevent="sendEmailVerification">
-                        {{ __('Click here to re-send the verification email.') }}
-                    </button>
-                </p>
-
-                @if ($this->verificationLinkSent)
-                    <p class="mt-2 font-medium text-sm text-green-600">
-                        {{ __('A new verification link has been sent to your email address.') }}
-                    </p>
-                @endif
-            @endif
-        </div>
-    </x-slot>
-
-    <x-slot name="actions">
-        <x-action-message class="me-3" on="saved">
-            {{ __('Saved.') }}
-        </x-action-message>
-
-        <x-button wire:loading.attr="disabled" wire:target="photo">
-            {{ __('Save') }}
-        </x-button>
-    </x-slot>
-</x-form-section>
+    </div>
+</div>

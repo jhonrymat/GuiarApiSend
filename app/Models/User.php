@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,8 +29,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'esternal_id',
-        'esternal_api',
+        'external_id',
+        'external_api',
         'email_verified_at',
         'profile_photo_path'
     ];
@@ -94,5 +95,23 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function adminlte_profile_url(){
         return 'user/profile/';
+    }
+
+    public function subscriptions(){
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function getLastSubscriptionAttribute(){
+        return $this->subscriptions()->orderBy('created_at', 'desc')->first();
+    }
+
+    //Accessors
+    public function getIsPlanAttribute(){
+        $subscription = $this->lastSubscription;
+
+        if(!$subscription){
+            return false;
+        }
+        return $subscription->finish_at >= Carbon::now();
     }
 }
